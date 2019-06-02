@@ -5,10 +5,10 @@
   functions to simplify the raytracing code, including;
 
   - Creating new instances of rays, objects, and light sources
-  - Setting up a camera
-  - Performing transformations on objects
-  - Image output
+  - Vector calculations
 
+  Relevant functions may be added here.
+  
   Code for short inline functions is here, not in utils.c
 */
 

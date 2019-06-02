@@ -7,6 +7,7 @@ double eye4x4[4][4]={{1.0, 0.0, 0.0, 0.0},
                     {0.0, 0.0, 1.0, 0.0},
                     {0.0, 0.0, 0.0, 1.0}};
 
+// ---------------------------------------------------------------------------------------
 /////////////////////////////////////////////
 // Primitive data structure section
 /////////////////////////////////////////////
@@ -30,7 +31,7 @@ struct point3D *newPoint(double px, double py, double pz)
 
 struct pointLS *newPLS(struct point3D *p0, double r, double g, double b)
 {
- // Allocate a new point light sourse structure. Initialize the light
+ // Allocate a new point light source structure. Initialize the light
  // source to the specified RGB colour
  // Note that this is a point light source in that it is a single point
  // in space, if you also want a uniform direction for light over the
@@ -82,7 +83,7 @@ void insertPLS(struct pointLS *l, struct pointLS **list)
  }
 
 }
-
+// ---------------------------------------------------------------------------------------
 /////////////////////////////////////////////
 // Ray and normal transforms
 /////////////////////////////////////////////
@@ -123,7 +124,7 @@ inline void normalTransform(struct point3D *n_orig, struct point3D *n_transforme
  n_transformed->pw=0;
  normalize(n_transformed);
 }
-
+// ---------------------------------------------------------------------------------------
 /////////////////////////////////////////////
 // Object management section
 /////////////////////////////////////////////
@@ -240,7 +241,7 @@ struct object3D *newCylinder(double ra, double rd, double rs, double rg, double 
  }
  return(cylinder);
 }
-
+// ---------------------------------------------------------------------------------------
  /////////////////////////////////
  // Intersection Section
  /////////////////////////////////
@@ -378,7 +379,7 @@ void planeIntersect(struct object3D *plane, struct ray3D *ray, double *lambda, s
   struct point3D *transformed_n =(struct point3D *)malloc(sizeof(struct point3D));
   
   memcpy(model_ray, ray, sizeof(struct ray3D));
- //transforming ray origin and direction vector from world to model view, using T_inv
+  //transforming ray origin and direction vector from world to model view, using T_inv
   matVecMult(plane->Tinv, &(model_ray->p0));
   matVecMult(plane->Tinv, &(model_ray->d));
   normalize(&(model_ray->d));
@@ -407,12 +408,12 @@ void planeIntersect(struct object3D *plane, struct ray3D *ray, double *lambda, s
   		n->py = 0;
   		n->pz = -1;
   		n->pw = 0;
-      //transforming normal using inverse tr7anspose of model to world matix
+      //transforming normal using inverse transpose of model to world matix
       normalTransform(n, transformed_n, plane); 
       normalize(transformed_n);
       memcpy(n, transformed_n, sizeof(point3D));
       normalize(n);
-	}
+	  }
     else *lambda = 0;
   }
   free(model_ray);
@@ -487,7 +488,7 @@ void sphereIntersect(struct object3D *sphere, struct ray3D *ray, double *lambda,
   free(model_ray);
   // free(transformed_n);
 }
-
+// ---------------------------------------------------------------------------------------
  //////////////////////////////////////////////////
  // Texture Mapping section
  //////////////////////////////////////////////////
@@ -555,7 +556,7 @@ void texMap(struct image *img, double a, double b, double *R, double *G, double 
  *(B)= (1-up)*(1-vp)*Buv + up*(1-vp)*Bup + (1-up)*vp*Brt + up*vp*Bacr;
 
 }
-
+// ---------------------------------------------------------------------------------------
 //////////////////////////////////////////////////
 // Lighting section
 //////////////////////////////////////////////////
@@ -600,7 +601,7 @@ void addAreaLight(float sx, float sy, float nx, float ny, float nz,\
 
 
 }
-
+// ---------------------------------------------------------------------------------------
 ///////////////////////////////////
 // Geometric transformation section
 ///////////////////////////////////
@@ -863,7 +864,7 @@ void printmatrix(double mat[4][4])
  fprintf(stderr,"%f %f %f %f\n",mat[2][0],mat[2][1],mat[2][2],mat[2][3]);
  fprintf(stderr,"%f %f %f %f\n",mat[3][0],mat[3][1],mat[3][2],mat[3][3]);
 }
-
+// ---------------------------------------------------------------------------------------
 /////////////////////////////////////////
 // Camera and view setup
 /////////////////////////////////////////
@@ -975,7 +976,7 @@ struct view *setupView(struct point3D *e, struct point3D *g, struct point3D *up,
  free(v);
  return(c);
 }
-
+// ---------------------------------------------------------------------------------------
 /////////////////////////////////////////
 // Image I/O section
 /////////////////////////////////////////

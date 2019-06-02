@@ -38,7 +38,7 @@ struct point3D{
    the point corresponds to the representation r(\lambda)=p+(\lambda)d */
 struct ray3D{
 	struct point3D p0;	// Ray origin (at lambda=0)
-	struct point3D d;		// Ray direction
+	struct point3D d;	// Ray direction
 	void (*rayPos)(struct ray3D *ray, double lambda, struct point3D *pos);
 					// Function to return the
 					// position along the ray
@@ -106,24 +106,24 @@ struct object3D{
   	// texture colour at that point using bi-linear interpolation 
 	void (*textureMap)(struct image *img, double a, double b, double *R, double *G, double *B);
 
-        struct image *texImg;				// Pointer to structure
+    struct image *texImg;	// Pointer to structure
 							// holding the texture
 							// for this object
-	double  alpha;		// Opacity - if less than 1 this is a semi
-				// transparent object and refraction rays
-				// should be implemented
+	double  alpha;			// Opacity - if less than 1 this is a semi
+							// transparent object and refraction rays
+							// should be implemented
 	double  r_index;		// Index of refraction
-   double  shinyness;	// Exponent for the Phong specular component
+    double  shinyness;		// Exponent for the Phong specular component
 	int 	frontAndBack;	// Flag to indicate that both sides of the object
-				// should be lit.
-	int	isLightSource;	// Flag to indicate if this is an area light source
+							// should be lit.
+	int	isLightSource;		// Flag to indicate if this is an area light source
 	struct object3D *next;	// Pointer to next entry in object linked list
 };
 // ---------------------------------------------------------------------------------------
 /* The structure below defines a point light source */
 struct pointLS{
 	struct colourRGB col;	// Light source colour
-	struct point3D p0;	// Light source location
+	struct point3D p0;		// Light source location
 	struct pointLS *next;	// Pointer to next light in the scene
 };
 // ---------------------------------------------------------------------------------------

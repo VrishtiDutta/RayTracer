@@ -3,12 +3,11 @@
 #define WIDTH 1000
 #define max(A,B) ((A)<(B)?(B):(A))
 
-// A couple of global structures and data: An object list, a light list, and the
-// maximum recursion depth
+// Global Variables for scene creation
+int MAX_DEPTH;
 struct object3D *object_list;
 struct pointLS *light_list;
 int light_list_size = 0;
-int MAX_DEPTH;
 int object_list_size = 0;
 
 
@@ -30,9 +29,9 @@ void buildScene(void)
  // NOTE: After setting up the transformations for each object, don't
  //       forget to set up the inverse transform matrix!
 
- struct object3D *o;
- struct pointLS *l;
- struct point3D p;
+	struct object3D *o;
+	struct pointLS *l;
+	struct point3D p;
 
 
  // Simple scene for Assignment 3:
@@ -50,7 +49,7 @@ void buildScene(void)
  //RotateZ(o,PI/1.20);
  RotateX(o,PI/2.25);
  Translate(o,0,-3,10);
-  o->isLightSource=0;
+ o->isLightSource=0;
  invert(&o->T[0][0],&o->Tinv[0][0]);		// Very important! compute
 						// and store the inverse
 						// transform for this object!
@@ -59,7 +58,7 @@ void buildScene(void)
  object_list_size += 1;
 
  o=newPlane(0.05,.75,.05,.05,.95,.95,.45,1,1,2);//this is the light source
- Scale(o,0.25,0.25,0.25);								// Do a few transforms...
+ Scale(o,0.25,0.25,0.25);
  //RotateZ(o,PI/1.20);
  RotateX(o,PI/2.25);
  Translate(o,0,1.7,-1);
@@ -73,7 +72,7 @@ void buildScene(void)
  Scale(o,.75,.5,1.5);
  RotateY(o,PI/2);
  Translate(o,-1.45,1.1,3.5);
-  o->isLightSource=0;
+ o->isLightSource=0;
  invert(&o->T[0][0],&o->Tinv[0][0]);
  insertObject(o,&object_list);
  object_list_size += 1;
@@ -112,20 +111,20 @@ void buildScene(void)
  float tx =0, ty = 15.5, tz=-5.5;
  //addAreaLight(1, 1, 0, -1, 0, 0, 15.5, -5.5, 4, 4, 0.95, 0.95, 0.95, &object_list, &light_list);
 
-	for (i=0; i<lx; i++){
- 		for(j=0; j<ly; j++){
+ for (i=0; i<lx; i++){
+ 	for(j=0; j<ly; j++){
  			double r = (double)rand() / (double)RAND_MAX ; //generate random double (0-1)
 			r = r/5; //random offset
 			p.px=i*r;
- 			p.py=15.5;
- 			p.pz=-5.5- j*r;
- 			p.pw=1;
- 			l=newPLS(&p,0.95,0.95,0.95);
- 			insertPLS(l,&light_list);
- 			light_list_size++;
- 		}
- 	}
-  
+			p.py=15.5;
+			p.pz=-5.5- j*r;
+			p.pw=1;
+			l=newPLS(&p,0.95,0.95,0.95);
+			insertPLS(l,&light_list);
+			light_list_size++;
+		}
+	}
+	
 
  // End of simple scene for Assignment 3
  // Keep in mind that you can define new types of objects such as cylinders and parametric surfaces,
@@ -162,15 +161,15 @@ void rtShade(struct object3D *obj, struct point3D *p, struct point3D *n, struct 
 
  if (obj->texImg==NULL)		// Not textured, use object colour
  {
-  R=obj->col.R;
-  G=obj->col.G;
-  B=obj->col.B;
+ 	R=obj->col.R;
+ 	G=obj->col.G;
+ 	B=obj->col.B;
  }
  else
  {
   // Get object colour from the texture given the texture coordinates (a,b), and the texturing function
   // for the object. Note that we will use textures also for Photon Mapping.
-  obj->textureMap(obj->texImg,a,b,&R,&G,&B);
+ 	obj->textureMap(obj->texImg,a,b,&R,&G,&B);
  }
 
  struct point3D *refl_lv = (struct point3D*)malloc(sizeof(struct point3D));
@@ -182,7 +181,7 @@ void rtShade(struct object3D *obj, struct point3D *p, struct point3D *n, struct 
  double dot_prod = 0;
  double gloss_fac = 0.1;
  int gloss_rays = 9;
-  
+ 
  memcpy(pl_vector, &(curr_light.p0),sizeof(struct point3D)); // index through light list later!!!
  memcpy(cam_dir, &(ray->p0), sizeof(struct point3D)); 
  subVectors(p, pl_vector);
@@ -205,9 +204,7 @@ void rtShade(struct object3D *obj, struct point3D *p, struct point3D *n, struct 
  refl_lv->pw = 0;
  
  int py = p->py;
- //if(obj->intersect == planeIntersect){
-//		p->py = 0;	
- //}
+
  normalize(refl_lv);
  normalize(n);
  
@@ -215,7 +212,7 @@ void rtShade(struct object3D *obj, struct point3D *p, struct point3D *n, struct 
  rdmax = max(0,dot(pl_vector, n));
  dif = (obj->alb.rd)*rdmax;
  spc_max = pow(max(0, dot(cam_dir,refl_lv)), obj->shinyness);
-  
+ 
  
  spc = (obj->alb.rs)*spc_max;
  // Be sure to update 'col' with the fi
@@ -223,7 +220,7 @@ void rtShade(struct object3D *obj, struct point3D *p, struct point3D *n, struct 
  col->G = (amb + dif +spc);
  col->B = (amb+ dif +spc);
  p->py = py;
- //printf("RGB, %f, %f, %f\n",col->R,col->G,col->B); 
+
  free(refl_lv);
  free(t);
  free(cam_dir);
@@ -245,52 +242,52 @@ void findFirstHit(struct ray3D *ray, double *lambda, struct object3D *Os, struct
  //case 1: camera ray
  //case 2: shadow ray: Os is given. obj, p, n, is not. All we want to know is if ray from Os to light intersects with any other objs
  //case 3: object reflection ray
- 
-  if(Os!=NULL){
-	int donothing = 0;
-  }
-  double min_dist = 99999;
-  double curr_len = 0;
-  double lam;
-  int isShadowray = 0;
-  struct point3D *tp = (struct point3D *) malloc(sizeof(struct point3D));
-  struct point3D *tn = (struct point3D *) malloc(sizeof(struct point3D));
-  struct object3D *curr_obj;
-  curr_obj = object_list;
-  *lambda = 0;	
+	
+	if(Os!=NULL){
+		int donothing = 0;
+	}
+	double min_dist = 99999;
+	double curr_len = 0;
+	double lam;
+	int isShadowray = 0;
+	struct point3D *tp = (struct point3D *) malloc(sizeof(struct point3D));
+	struct point3D *tn = (struct point3D *) malloc(sizeof(struct point3D));
+	struct object3D *curr_obj;
+	curr_obj = object_list;
+	*lambda = 0;	
 
 	if(Os!=NULL && obj == NULL && p == NULL && n == NULL){
 		isShadowray = 1;
 	}  
-   if(isShadowray == 0){
+	if(isShadowray == 0){
   		while(curr_obj != NULL){ //comment out loop, just get just plane to render
-				curr_obj->intersect(curr_obj, ray, &lam, tp, tn, a, b);
-				if(lam>0 && obj!=NULL){
+  			curr_obj->intersect(curr_obj, ray, &lam, tp, tn, a, b);
+  			if(lam>0 && obj!=NULL){
 					//printf("normal %f %f %f\n", tn->px, tn->py, tn->pz);
-					curr_len = lam;
-					if ((min_dist > curr_len) && (curr_len > 0)){
-						min_dist = curr_len;
-						*obj = curr_obj;
-						*lambda = lam;
-						memcpy(p, tp, sizeof(struct point3D));
-						memcpy(n, tn, sizeof(struct point3D));
+  				curr_len = lam;
+  				if ((min_dist > curr_len) && (curr_len > 0)){
+  					min_dist = curr_len;
+  					*obj = curr_obj;
+  					*lambda = lam;
+  					memcpy(p, tp, sizeof(struct point3D));
+  					memcpy(n, tn, sizeof(struct point3D));
 						//printf("normal, %f, %f, %f\n",n->px,n->py,n->pz); 
-					}
-				}
-	 		curr_obj = curr_obj->next;
-		}
+  				}
+  			}
+  			curr_obj = curr_obj->next;
+  		}
 	}else{ //this ray checks for shadow at p
 
 		while(curr_obj != NULL){ //comment out loop, just get just plane to render
-  			if(curr_obj!=Os){ 
+			if(curr_obj!=Os){ 
 				curr_obj->intersect(curr_obj, ray, &lam, tp, tn, a, b);
 				if(lam>0 && curr_obj->isLightSource!=1){
 					*lambda = lam;
 				}
-	 		}else{
-	 			*lambda = 0;
-	 		}
-	 		curr_obj = curr_obj->next;
+			}else{
+				*lambda = 0;
+			}
+			curr_obj = curr_obj->next;
 		}
 	}
 	free(tp);
@@ -313,42 +310,41 @@ void rayTrace(struct ray3D *ray, int depth, struct colourRGB *col, struct object
  // ray originates.
  //
 
-	 double lambda, shadowlam;		// Lambda at intersection
-	 double a,b;		// Texture coordinates
-	 struct object3D *obj;
-	 struct object3D *obj2;	// Pointer to object at intersection
-	 struct point3D p, tp;	// Intersection point
-	 struct point3D n, tn;	// Normal at intersection
-	 struct colourRGB I;	// intensity returned by shading function
-	 struct colourRGB total; //stores total color from all light source to be averaged later	
-	 struct point3D dist_v;
-	 double dist = 0;
-	 if (depth>MAX_DEPTH)	// Max recursion depth reached. Return invalid colour.
-	 {
-	  col->R=0;
-	  col->G=0;
-	  col->B=0;
-	  return;
-	 } 
-	 else
-	 {
-	  col->R=0;
-	  col->G=0;
-	  col->B=0;
-	  total.R=0;
-	  total.G=0;
-	  total.B=0;
-	  findFirstHit(ray, &lambda, Os, &obj, &p, &n, &a, &b);
-		//=printf("normal, %f, %f, %f\n",n.px,n.py,n.pz); 
-//		if (obj != NULL){
+	double lambda, shadowlam;		// Lambda at intersection
+	double a,b;				// Texture coordinates
+	struct object3D *obj;
+	struct object3D *obj2;	// Pointer to object at intersection
+	struct point3D p, tp;	// Intersection point
+	struct point3D n, tn;	// Normal at intersection
+	struct colourRGB I;		// intensity returned by shading function
+	struct colourRGB total; //stores total color from all light source to be averaged later	
+	struct point3D dist_v;
+	double dist = 0;
+	if (depth>MAX_DEPTH)	// Max recursion depth reached. Return invalid colour.
+	{
+		col->R=0;
+		col->G=0;
+		col->B=0;
+		return;
+	} 
+	else
+	{
+		col->R=0;
+		col->G=0;
+		col->B=0;
+		total.R=0;
+		total.G=0;
+		total.B=0;
+		findFirstHit(ray, &lambda, Os, &obj, &p, &n, &a, &b);
+
 		if (lambda > 0){ //intersection == true, color it
 		//loop through all light sources-------------------------------------------
 			struct ray3D* lightray;
 			struct point3D *dir = (struct point3D*)malloc(sizeof(struct point3D));
-		 	struct pointLS *curr_light = light_list;
-		 	
-		 	while (curr_light!=NULL)
-		 	{
+			struct pointLS *curr_light = light_list;
+			
+			while (curr_light!=NULL)
+			{
 				memcpy(dir, &(curr_light->p0), sizeof(struct point3D));
 				subVectors(&p, dir);
 				dir->pw = 0;
@@ -356,75 +352,74 @@ void rayTrace(struct ray3D *ray, int depth, struct colourRGB *col, struct object
 				memcpy(&dist_v, dir, sizeof(point3D));
 				normalize(&(lightray->d));
 				findFirstHit(lightray, &shadowlam, obj, NULL, NULL, NULL, &a, &b);
-				//printf("p %f %f %f \n", p.px,p.py,p.pz);
+			//printf("p %f %f %f \n", p.px,p.py,p.pz);
 				if(shadowlam <=0){
 					rtShade(obj, &p, &n, ray, depth, a, b, &I);
-					//printf("normal, %f, %f, %f\n",n.px,n.py,n.pz); 
+				//printf("normal, %f, %f, %f\n",n.px,n.py,n.pz); 
 					total.R += I.R * obj->col.R;
 					total.G += I.G * obj->col.G;
 					total.B += I.B * obj->col.B;
 					
-				}else{ //don't color the shadow
-					total.R += 0;
-					total.G += 0;
-					total.B += 0;
-					//printf("it never gets here\n");
-				}
-				curr_light = curr_light->next;
-				free(lightray);
-			}
-			col->R = total.R/light_list_size;
-			col->G = total.G/light_list_size;
-			col->B = total.B/light_list_size;
-			
-			if(depth>0){
-				//create reflected ray along the normal. Follow the formula on slides.
-				if(obj->intersect != planeIntersect){
-					struct ray3D *ref_ray=(struct ray3D *) malloc(sizeof(struct ray3D));
-					double dot_prod = dot(&(ray->d), &n);
-					struct point3D np;	// Intersection point
-	 				struct point3D nn;	// Normal at intersection
-	 			
-					ref_ray->p0 = p;
-					ref_ray->d.px = ray->d.px - 2*dot_prod*n.px;
-					ref_ray->d.py = ray->d.py - 2*dot_prod*n.py;
-					ref_ray->d.pz = ray->d.pz - 2*dot_prod*n.pz;
-					ref_ray->d.pw = 0;
-					ref_ray->rayPos = rayPosition;
-					normalize(&(ref_ray->d));
-				
-					double tlam;
-					struct object3D *tobj;
-					struct colourRGB *newcol = (struct colourRGB *) malloc(sizeof(struct colourRGB));
-					depth++;
-					rayTrace(ref_ray, depth, newcol, obj);
-					col->R += 0.4*newcol->R;
-					col->G += 0.4*newcol->G;
-					col->B += 0.4*newcol->B;
-					free(newcol);
-					free(ref_ray);
-				}
-			}
-			
-			free(dir);
-			//free(obj);
+			}else{ //don't color the shadow
+			total.R += 0;
+			total.G += 0;
+			total.B += 0;
+				//printf("it never gets here\n");
 		}
-		else //darkness
-		{
-			col->R +=0.0;
-			col->G +=0.0;
-			col->B +=0.0;
-		}
+		curr_light = curr_light->next;
+		free(lightray);
+	}
+	col->R = total.R/light_list_size;
+	col->G = total.G/light_list_size;
+	col->B = total.B/light_list_size;
+	
+	if(depth>0){
+			//create reflected ray along the normal. Follow the formula on slides.
+		if(obj->intersect != planeIntersect){
+			struct ray3D *ref_ray=(struct ray3D *) malloc(sizeof(struct ray3D));
+			double dot_prod = dot(&(ray->d), &n);
+				struct point3D np;	// Intersection point
+ 				struct point3D nn;	// Normal at intersection
+ 				
+ 				ref_ray->p0 = p;
+ 				ref_ray->d.px = ray->d.px - 2*dot_prod*n.px;
+ 				ref_ray->d.py = ray->d.py - 2*dot_prod*n.py;
+ 				ref_ray->d.pz = ray->d.pz - 2*dot_prod*n.pz;
+ 				ref_ray->d.pw = 0;
+ 				ref_ray->rayPos = rayPosition;
+ 				normalize(&(ref_ray->d));
+ 				
+ 				double tlam;
+ 				struct object3D *tobj;
+ 				struct colourRGB *newcol = (struct colourRGB *) malloc(sizeof(struct colourRGB));
+ 				depth++;
+ 				rayTrace(ref_ray, depth, newcol, obj);
+ 				col->R += 0.4*newcol->R;
+ 				col->G += 0.4*newcol->G;
+ 				col->B += 0.4*newcol->B;
+ 				free(newcol);
+ 				free(ref_ray);
+ 			}
+ 		}
+ 		
+ 		free(dir);
+ 	}
+	else //darkness
+	{
+		col->R +=0.0;
+		col->G +=0.0;
+		col->B +=0.0;
+	}
 
 
-	 }	
+}	
 }
 
 int main(int argc, char *argv[])
 {
-	 // Main function for the raytracer. Parses input parameters,
-	 // sets up the initial blank image, and calls the functions
-	 // that set up the scene and do the raytracing.
+	// Main function for the raytracer. Parses input parameters,
+	// sets up the initial blank image, and calls the functions
+	// that set up the scene and do the raytracing.
 	 struct image *im;	// Will hold the raytraced image
 	 struct view *cam;	// Camera and view for this scene
 	 int sx;		// Size of the raytraced image
@@ -443,16 +438,16 @@ int main(int argc, char *argv[])
 	 struct colourRGB total_col;	
 	 int i,j;			// Counters for pixel coordinates
 	 unsigned char *rgbIm;
-		int total = 0, total2 = 0;
+	 int total = 0, total2 = 0;
 	 if (argc<5)
 	 {
-	  fprintf(stderr,"RayTracer: Can not parse input parameters\n");
-	  fprintf(stderr,"USAGE: RayTracer size rec_depth antialias output_name\n");
-	  fprintf(stderr,"   size = Image size (both along x and y)\n");
-	  fprintf(stderr,"   rec_depth = Recursion depth\n");
-	  fprintf(stderr,"   antialias = A single digit, 0 disables antialiasing. Anything else enables antialiasing\n");
-	  fprintf(stderr,"   output_name = Name of the output file, e.g. MyRender.ppm\n");
-	  exit(0);
+	 	fprintf(stderr,"RayTracer: Can not parse input parameters\n");
+	 	fprintf(stderr,"USAGE: RayTracer size rec_depth antialias output_name\n");
+	 	fprintf(stderr,"   size = Image size (both along x and y)\n");
+	 	fprintf(stderr,"   rec_depth = Recursion depth\n");
+	 	fprintf(stderr,"   antialias = A single digit, 0 disables antialiasing. Anything else enables antialiasing\n");
+	 	fprintf(stderr,"   output_name = Name of the output file, e.g. MyRender.ppm\n");
+	 	exit(0);
 	 }
 	 sx=atoi(argv[1]);
 	 MAX_DEPTH=atoi(argv[2]);
@@ -472,8 +467,8 @@ int main(int argc, char *argv[])
 	 im=newImage(sx, sx);
 	 if (!im)
 	 {
-	  fprintf(stderr,"Unable to allocate memory for raytraced image\n");
-	  exit(0);
+	 	fprintf(stderr,"Unable to allocate memory for raytraced image\n");
+	 	exit(0);
 	 }
 	 else rgbIm=(unsigned char *)im->rgbdata;
 
@@ -513,10 +508,10 @@ int main(int argc, char *argv[])
 
 	 if (cam==NULL)
 	 {
-	  fprintf(stderr,"Unable to set up the view and camera parameters. Our of memory!\n");
-	  cleanup(object_list,light_list);
-	  deleteImage(im);
-	  exit(0);
+	 	fprintf(stderr,"Unable to set up the view and camera parameters. Our of memory!\n");
+	 	cleanup(object_list,light_list);
+	 	deleteImage(im);
+	 	exit(0);
 	 }
 
 	 // Set up background colour here
@@ -543,14 +538,14 @@ int main(int argc, char *argv[])
 	 for (j=0;j<sx;j++)		// For each of the pixels in the image
 	 {
 	 // fprintf(stderr,"%d/%d, ",j,sx);
-	  for (i=0;i<sx;i++)
-	  {
-	  		total_col.R = 0;
-			total_col.G = 0;
-			total_col.B = 0;
-		
+	 	for (i=0;i<sx;i++)
+	 	{
+	 		total_col.R = 0;
+	 		total_col.G = 0;
+	 		total_col.B = 0;
+	 		
 		//from 418notes =: (wl+(i+0.5)Δu,wt+(j+0.5)Δv,f)
-		
+	 		
 		d = (struct point3D*)malloc(sizeof(point3D)); //dir vector
 		pc = (struct point3D*)malloc(sizeof(point3D)); //image plane
 		struct point3D *origin = newPoint(0,0,0); //camera origin
@@ -594,7 +589,7 @@ int main(int argc, char *argv[])
 				total_col.R += col.R;
 				total_col.G += col.G;
 				total_col.B += col.B;
-			
+				
 			}
 		}
 		total_col.R = total_col.R/((n_samples-1)*antialiasing+1);
@@ -607,16 +602,16 @@ int main(int argc, char *argv[])
 		//coloring the pixel with u and v values as per davids suggestion for debugging
 		//if(col.R!=0 && col.G!=0 && col.B!=0){
 
-			((unsigned char*)im->rgbdata)[(j*sx + i)*3]   = (unsigned char) min(total_col.R*255, 255);
-			((unsigned char*)im->rgbdata)[(j*sx + i)*3+1] = (unsigned char) min(total_col.G*255, 255);
-			((unsigned char*)im->rgbdata)[(j*sx + i)*3+2] = (unsigned char) min(total_col.B*255, 255);
+		((unsigned char*)im->rgbdata)[(j*sx + i)*3]   = (unsigned char) min(total_col.R*255, 255);
+		((unsigned char*)im->rgbdata)[(j*sx + i)*3+1] = (unsigned char) min(total_col.G*255, 255);
+		((unsigned char*)im->rgbdata)[(j*sx + i)*3+2] = (unsigned char) min(total_col.B*255, 255);
 		//}
-			free(d);
-			free(pc);
-			free(origin);
+		free(d);
+		free(pc);
+		free(origin);
 	  } // end for i
 	 } // end for j
-	printf("pixel %d pixel 2 %d\n",total, total2);
+	 printf("pixel %d pixel 2 %d\n",total, total2);
 	 fprintf(stderr,"\nDone!\n");
 	 //printmatrix(object_list[0].T);
 	 //printmatrix(object_list[0].Tinv);
@@ -629,4 +624,4 @@ int main(int argc, char *argv[])
 	  deleteImage(im);				// Rendered image
 	 free(cam);					// camera view
 	 exit(0);
-}
+	}
