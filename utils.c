@@ -429,7 +429,6 @@ void sphereIntersect(struct object3D *sphere, struct ray3D *ray, double *lambda,
 	struct ray3D *model_ray = (struct ray3D *) malloc(sizeof(struct ray3D));
 	memcpy(model_ray, ray, sizeof(ray3D));
   // transforming ray from world to model
-  //rayTransform(ray, model_ray, sphere);
   matVecMult(sphere->Tinv, &(model_ray->p0));
 	matVecMult(sphere->Tinv, &(model_ray->d));
   // getting coefficiennormalTransform(n, transformed_n, plane); ts of sphere equation, i.e. A.t^2 + B.t + C - R^2 = 0 :
