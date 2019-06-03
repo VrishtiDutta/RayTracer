@@ -16,7 +16,7 @@ for each pixel:
 
 Why the calculation of the normal from first hit is necessary is described below in the following paragraph. But the intersection calculations differ based on objects. For example, a sphere intersection is calculated as follows.  
 
-<center> <img src="rayshereinteresection.jpg"/> </center>  
+<center> <img src="raysphereintersection.jpg"/> </center>  
 
 Note, the t in above image is denoted as variable ```lambda``` in code.
 
@@ -46,6 +46,6 @@ Note that the subsequent stages to building the final RayTracer (RayTracerScene2
 The header files (recieved as starter code and referenced in code) defined the basic algebraic structures such as a 3-D Point, Vector, Ray, Image plane (matrix), with functions to allow linear algebra calculations.  
 
 ## References:
-[1] Fundamentals of Computer Graphics (2nd Edition), by Shirley et al.
-[2] Lecture on Illumination and Shading: http://www.inf.ed.ac.uk/teaching/courses/cg/lectures/cg4_2016.pdf
-[3] Assignment instructions at Princeton: http://www.ctralie.com/PrincetonUGRAD/Projects/COS426/Assignment3/part1.html
+[1] Fundamentals of Computer Graphics (2nd Edition), by Shirley et al.  
+[2] Lecture on Illumination and Shading: http://www.inf.ed.ac.uk/teaching/courses/cg/lectures/cg4_2016.pdf. 
+[3] Assignment instructions at Princeton: http://www.ctralie.com/PrincetonUGRAD/Projects/COS426/Assignment3/part1.html. 
