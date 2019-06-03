@@ -1,5 +1,17 @@
 # RayTracer
 
+## Table of Contents:
+1. [Background](#background)
+2. [Repository Files](#repository-files) (Outputs: 
+   [Stage 1](#initial-image-with-basic-structures-and-area-lighting-for-shadow),
+   [Stage 2](#second-stage-with-phongs-illumination-model),
+   [Stage 3](#third-stage-with-anti-aliasing),
+   [Final Stage](#final-stage-with-environment-mapping-and-texture-mapping))
+3. [Code Structure](#code-structure)
+4. [Additional Features](#additional-features) (
+   )
+5. [References](#references)
+
 ## Background:
 This ray tracer basically "paints an image" based on a hypothetical scene set up in the viewpoint of e (as depicted below).  
 
@@ -35,7 +47,7 @@ Note that the subsequent stages to building the final RayTracer (RayTracerScene2
 ### Initial image (with basic structures and area lighting for shadow):
 <center> <img src="scene1.png"/> </center>  
 
-### Second stage (with Phong's Illumination Model implemented in function rtShade):
+### Second stage (with Phong's Illumination Model):
 <center> <img src="scene3.png"/> </center> 
 
 ### Third stage (with Anti-aliasing):
@@ -45,7 +57,55 @@ Note that the subsequent stages to building the final RayTracer (RayTracerScene2
 <center> <img src="finalscene.png"/> </center>  
 The header files (recieved as starter code and referenced in code) defined the basic algebraic structures such as a 3-D Point, Vector, Ray, Image plane (matrix), with functions to allow linear algebra calculations.  
 
-## References:
-[1] Fundamentals of Computer Graphics (2nd Edition), by Shirley et al.  
-[2] Lecture on Illumination and Shading: http://www.inf.ed.ac.uk/teaching/courses/cg/lectures/cg4_2016.pdf. 
-[3] Assignment instructions at Princeton: http://www.ctralie.com/PrincetonUGRAD/Projects/COS426/Assignment3/part1.html. 
+## Code Structure
+The code is structured in the following manner (except in reverse order in code):
+```
+main() {
+  // Builds scene with objects in the viewpoint of the eye (point e in above diagram)
+  buildScene()
+  // OR Environment maps for final scene
+  ⋮
+  for each pixel:
+    rayTrace() // ray trace followed by anti-aliasing here
+  ⋮
+  // write to output file
+}
+```
+
+```
+rayTrace() {
+  while specified recursion depth is not reached:
+    findFirstHit()
+    rtShade()
+}
+```
+
+```
+findFirstHit() {
+  // checks intersection of ray with object
+  // checks if reflection of that ray will hit any other objects
+  ⋮
+  // passes lambda and next object intersection information down to rayTrace
+}
+```
+
+```
+rtShade() {
+  // Uses Phong Illumination Model to return pixel colour to rayTrace
+  // OR Uses Texture mapping to return pixel colour
+}
+```
+## Additional Features
+
+### Area-lighting
+
+### Anti-aliasing
+
+### Environment mapping
+
+### Texture mapping
+
+## References
+1. Fundamentals of Computer Graphics (2nd Edition), by Shirley et al.  
+2. Lecture on Illumination and Shading: http://www.inf.ed.ac.uk/teaching/courses/cg/lectures/cg4_2016.pdf. 
+3. Assignment instructions at Princeton: http://www.ctralie.com/PrincetonUGRAD/Projects/COS426/Assignment3/part1.html. 
