@@ -99,7 +99,7 @@ rtShade() {
 ### Area-lighting
 Area lighting allows for soft-shadows on the ground plane using the idea of partial visibility of light under penumbra region as depicted in diagram below.
 <center> <img src="softshadow.jpg" width="200" height="400"/> </center>  
-When an area light is present, rayTrace uses the object of next hit and ```lambda``` to calculate colour for each light source.  
+When an area light is present, rayTrace uses the object of next hit and lambda to calculate colour for each light source.  
 
 ### Anti-aliasing
 Averages the colour calculation of a pixel with it's surrounding pixels for smoother representation, as done in the main function itself.
